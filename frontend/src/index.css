@@ -3,25 +3,207 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    @apply border-border;
+  }
+
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-surface text-text-primary antialiased;
+    font-feature-settings: 'liga' 1, 'calt' 1;
+  }
+
+  /* Dark mode */
+  .dark body {
+    @apply bg-surface-dark-1 text-text-inverse;
   }
 }
 
 @layer components {
+  /* Google Material Design Buttons */
+  .btn-google {
+    @apply inline-flex items-center justify-center gap-2 px-google-6 py-3 rounded-google
+           font-medium text-sm transition-all duration-200 outline-none
+           focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
   .btn-primary {
-    @apply bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium;
+    @apply btn-google bg-primary-500 text-white hover:bg-primary-600 hover:shadow-google
+           active:bg-primary-700 focus-visible:ring-primary-300;
   }
 
   .btn-secondary {
-    @apply bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors font-medium;
+    @apply btn-google bg-surface-light text-text-primary border border-border
+           hover:bg-surface-dark hover:shadow-google-sm active:bg-surface-dark
+           focus-visible:ring-primary-200;
   }
 
-  .input-field {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none;
+  .btn-text {
+    @apply btn-google bg-transparent text-primary-500 hover:bg-primary-50
+           active:bg-primary-100 focus-visible:ring-primary-200;
+  }
+
+  .btn-icon {
+    @apply p-2 rounded-full hover:bg-surface-dark active:bg-border transition-colors;
+  }
+
+  .btn-fab {
+    @apply fixed bottom-google-6 right-google-6 w-14 h-14 rounded-full
+           bg-primary-500 text-white shadow-google-lg hover:shadow-google-xl
+           flex items-center justify-center transition-all hover:scale-105;
+  }
+
+  /* Google Material Design Cards */
+  .card-google {
+    @apply bg-surface-light rounded-google-lg shadow-google-sm
+           hover:shadow-google transition-shadow duration-200;
   }
 
   .card {
-    @apply bg-white rounded-lg shadow-sm p-6;
+    @apply card-google p-google-6;
+  }
+
+  .card-hover {
+    @apply card-google p-google-6 cursor-pointer hover:shadow-google-lg;
+  }
+
+  .dark .card-google,
+  .dark .card,
+  .dark .card-hover {
+    @apply bg-surface-dark-2 shadow-none border border-border-dark;
+  }
+
+  /* Google Material Design Input Fields */
+  .input-google {
+    @apply w-full px-google-4 py-3 rounded-google border border-border
+           bg-surface-light text-text-primary placeholder:text-text-tertiary
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           transition-all duration-200;
+  }
+
+  .input-field {
+    @apply input-google;
+  }
+
+  .dark .input-google,
+  .dark .input-field {
+    @apply bg-surface-dark-2 border-border-dark text-text-inverse;
+  }
+
+  /* Floating Label Input (Google Style) */
+  .input-floating {
+    @apply relative;
+  }
+
+  .input-floating input {
+    @apply input-google pt-6 pb-2;
+  }
+
+  .input-floating label {
+    @apply absolute left-google-4 top-1/2 -translate-y-1/2 text-text-tertiary
+           transition-all duration-200 pointer-events-none text-sm;
+  }
+
+  .input-floating input:focus ~ label,
+  .input-floating input:not(:placeholder-shown) ~ label {
+    @apply text-xs top-2 translate-y-0 text-primary-500;
+  }
+
+  /* Google Material Design Chips */
+  .chip {
+    @apply inline-flex items-center gap-1 px-google-3 py-1 rounded-full
+           bg-surface-dark text-text-secondary text-sm font-medium;
+  }
+
+  .chip-primary {
+    @apply chip bg-primary-50 text-primary-700;
+  }
+
+  .chip-success {
+    @apply chip bg-accent-50 text-accent-700;
+  }
+
+  .chip-warning {
+    @apply chip bg-yellow-50 text-yellow-700;
+  }
+
+  .chip-error {
+    @apply chip bg-red-50 text-red-700;
+  }
+
+  /* Google Material Design Tables */
+  .table-google {
+    @apply w-full border-collapse;
+  }
+
+  .table-google thead {
+    @apply bg-surface-dark border-b border-border;
+  }
+
+  .table-google th {
+    @apply px-google-4 py-google-3 text-left text-sm font-medium text-text-secondary;
+  }
+
+  .table-google td {
+    @apply px-google-4 py-google-4 text-sm text-text-primary border-b border-border;
+  }
+
+  .table-google tbody tr {
+    @apply hover:bg-surface-dark transition-colors cursor-pointer;
+  }
+
+  /* Google Material Design Dividers */
+  .divider {
+    @apply border-t border-border my-google-4;
+  }
+
+  /* Google Material Design Elevation */
+  .elevation-1 {
+    @apply shadow-google-sm;
+  }
+
+  .elevation-2 {
+    @apply shadow-google;
+  }
+
+  .elevation-3 {
+    @apply shadow-google-lg;
+  }
+
+  .elevation-4 {
+    @apply shadow-google-xl;
+  }
+
+  /* Google Material Design List Items */
+  .list-item {
+    @apply flex items-center gap-google-4 px-google-4 py-google-3
+           hover:bg-surface-dark rounded-google transition-colors cursor-pointer;
+  }
+
+  /* Google Material Design Badge */
+  .badge {
+    @apply inline-flex items-center justify-center min-w-[20px] h-5 px-1.5
+           rounded-full bg-google-red text-white text-xs font-medium;
+  }
+
+  /* Google Material Design Progress */
+  .progress-bar {
+    @apply w-full h-1 bg-surface-dark rounded-full overflow-hidden;
+  }
+
+  .progress-bar-fill {
+    @apply h-full bg-primary-500 transition-all duration-300;
+  }
+
+  /* Google Material Design Search Bar */
+  .search-bar {
+    @apply flex items-center gap-google-3 px-google-4 py-2
+           bg-surface-dark rounded-google-2xl border border-transparent
+           hover:bg-surface-light hover:border-border hover:shadow-google-sm
+           focus-within:bg-surface-light focus-within:border-primary-500 focus-within:shadow-google
+           transition-all duration-200;
+  }
+
+  .search-bar input {
+    @apply flex-1 bg-transparent outline-none text-text-primary placeholder:text-text-tertiary;
   }
 }
