@@ -1,0 +1,187 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  HR_MANAGER
+  EMPLOYEE
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum LeaveType {
+  SICK
+  CASUAL
+  VACATION
+  UNPAID
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+}
+
+enum ApplicationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  SHORTLISTED
+  REJECTED
+  ACCEPTED
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password      String
+  role          Role        @default(EMPLOYEE)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  employee      Employee?
+
+  @@map("users")
+}
+
+model Employee {
+  id                String      @id @default(uuid())
+  userId            String      @unique
+  firstName         String
+  lastName          String
+  phoneNumber       String?
+  dateOfBirth       DateTime?
+  address           String?      @db.Text
+  department        String?
+  position          String?
+  joiningDate       DateTime    @default(now())
+  salary            Decimal     @db.Decimal(10, 2)
+
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attendances       Attendance[]
+  leaves            Leave[]
+  payrolls          Payroll[]
+
+  @@map("employees")
+}
+
+model Attendance {
+  id                String      @id @default(uuid())
+  employeeId        String
+  clockIn           DateTime
+  clockOut          DateTime?
+  clockInLatitude   Float?
+  clockInLongitude  Float?
+  clockOutLatitude  Float?
+  clockOutLongitude Float?
+  workingHours      Float?      @default(0)
+  overtimeHours     Float?      @default(0)
+  date              DateTime    @db.Date
+
+  employee          Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, date])
+  @@map("attendances")
+}
+
+model Leave {
+  id                String        @id @default(uuid())
+  employeeId        String
+  leaveType         LeaveType
+  startDate         DateTime      @db.Date
+  endDate           DateTime      @db.Date
+  reason            String        @db.Text
+  status            LeaveStatus   @default(PENDING)
+  appliedAt         DateTime      @default(now())
+  reviewedAt        DateTime?
+  reviewedBy        String?
+  reviewComments    String?       @db.Text
+
+  employee          Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, status])
+  @@map("leaves")
+}
+
+model Payroll {
+  id                String      @id @default(uuid())
+  employeeId        String
+  month             Int         // 1-12
+  year              Int
+  baseSalary        Decimal     @db.Decimal(10, 2)
+  overtimePay       Decimal     @db.Decimal(10, 2) @default(0)
+  allowances        Decimal     @db.Decimal(10, 2) @default(0)
+  deductions        Decimal     @db.Decimal(10, 2) @default(0)
+  netSalary         Decimal     @db.Decimal(10, 2)
+  workingDays       Int         @default(0)
+  presentDays       Int         @default(0)
+  overtimeHours     Float       @default(0)
+  generatedAt       DateTime    @default(now())
+  pdfPath           String?
+
+  employee          Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, month, year])
+  @@index([month, year])
+  @@map("payrolls")
+}
+
+model JobPosting {
+  id                String        @id @default(uuid())
+  title             String
+  department        String
+  description       String        @db.Text
+  requirements      String        @db.Text
+  salaryRange       String?
+  location          String?
+  status            JobStatus     @default(OPEN)
+  postedAt          DateTime      @default(now())
+  closedAt          DateTime?
+
+  applications      Application[]
+
+  @@map("job_postings")
+}
+
+model Application {
+  id                String              @id @default(uuid())
+  jobPostingId      String
+  applicantName     String
+  applicantEmail    String
+  applicantPhone    String?
+  resumePath        String
+  coverLetter       String?             @db.Text
+  status            ApplicationStatus   @default(SUBMITTED)
+  aiScore           Float?
+  aiAnalysis        String?             @db.Text
+  appliedAt         DateTime            @default(now())
+  reviewedAt        DateTime?
+
+  jobPosting        JobPosting          @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+
+  @@index([jobPostingId, status])
+  @@map("applications")
+}
+
+model Notification {
+  id                String      @id @default(uuid())
+  userId            String
+  title             String
+  message           String      @db.Text
+  type              String      // leave_approved, salary_generated, application_update, etc.
+  isRead            Boolean     @default(false)
+  createdAt         DateTime    @default(now())
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
