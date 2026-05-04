@@ -76,6 +76,7 @@ VITE_MAP_CENTER_LNG=-122.4194
 - JWT-based authentication
 - Role-based access control
 - Persistent login with localStorage
+- Employee Invitation & Activation
 
 ### GPS Attendance
 - Browser geolocation API
@@ -101,7 +102,7 @@ VITE_MAP_CENTER_LNG=-122.4194
 
 ## Styling
 
-The project uses Tailwind CSS with custom configurations:
+The project uses Tailwind CSS with custom configurations, featuring a modern "Industrial" theme:
 
 - Custom color palette (primary blues)
 - Custom component classes (.btn-primary, .card, etc.)

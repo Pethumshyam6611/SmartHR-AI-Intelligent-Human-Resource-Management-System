@@ -30,6 +30,12 @@ A modern, full-stack web application designed to automate and intelligently mana
   - AI-powered resume screening with fit scores
   - Automated candidate matching using Gemini API
 
+- **Employee Management**
+  - Centralized employee database
+  - **Employee Activation/Deactivation**
+  - **Invitation System** for new hires
+  - Detailed profile management
+
 - **Analytics Dashboard**
   - Key performance indicators (KPIs)
   - Attendance rate visualization
@@ -243,12 +249,15 @@ http://localhost:5000/api
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - User login
 - `POST /api/auth/refresh-token` - Refresh JWT token
+- `POST /api/auth/invite` - Invite new employee (Admin/HR)
+- `PUT /api/auth/profile` - Update own profile
 
 ### Employee Endpoints
 
 - `GET /api/employees` - Get all employees (Admin/HR)
 - `GET /api/employees/:id` - Get employee by ID
 - `PUT /api/employees/:id` - Update employee (Admin/HR)
+- `PATCH /api/employees/:id/toggle-status` - Activate/Deactivate employee
 - `DELETE /api/employees/:id` - Delete employee (Admin only)
 
 ### Attendance Endpoints
@@ -317,7 +326,7 @@ See `backend/prisma/schema.prisma` for complete schema definition.
 - [ ] Job posting and application system
 - [ ] AI resume screening
 - [ ] Analytics dashboard
-- [ ] AI HR Assistant
+- [x] AI HR Assistant
 - [ ] Email notifications
 
 ## Environment Variables

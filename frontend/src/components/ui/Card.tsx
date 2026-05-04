@@ -26,7 +26,7 @@ interface CardHeaderProps {
 
 export function CardHeader({ title, subtitle, action, className = '' }: CardHeaderProps) {
   return (
-    <div className={`flex items-start justify-between mb-google-4 ${className}`}>
+    <div className={`flex items-start justify-between mb-4 ${className}`}>
       <div>
         <h3 className="text-lg font-medium text-text-primary">{title}</h3>
         {subtitle && <p className="text-sm text-text-secondary mt-1">{subtitle}</p>}

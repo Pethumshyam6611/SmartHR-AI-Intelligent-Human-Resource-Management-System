@@ -27,18 +27,17 @@ export function Tabs({ tabs, defaultTab, onChange }: TabsProps) {
     <div className="w-full">
       {/* Tab Headers */}
       <div className="border-b border-border">
-        <div className="flex gap-google-2">
+        <div className="flex gap-2">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
               className={`
-                flex items-center gap-2 px-google-4 py-google-3 text-sm font-medium
+                flex items-center gap-2 px-4 py-3 text-sm font-medium
                 border-b-2 transition-colors
-                ${
-                  activeTab === tab.id
-                    ? 'border-primary-500 text-primary-500'
-                    : 'border-transparent text-text-secondary hover:text-text-primary'
+                ${activeTab === tab.id
+                  ? 'border-primary-500 text-primary-500'
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
                 }
               `}
             >
@@ -50,7 +49,7 @@ export function Tabs({ tabs, defaultTab, onChange }: TabsProps) {
       </div>
 
       {/* Tab Content */}
-      <div className="mt-google-4">{activeContent}</div>
+      <div className="mt-4">{activeContent}</div>
     </div>
   );
 }

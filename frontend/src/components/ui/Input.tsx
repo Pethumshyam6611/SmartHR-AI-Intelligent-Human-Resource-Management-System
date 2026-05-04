@@ -9,33 +9,17 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, helperText, floating = false, className = '', ...props }, ref) => {
-    if (floating && label) {
-      return (
-        <div className="w-full">
-          <div className="input-floating">
-            <input
-              ref={ref}
-              className={`input-google ${error ? 'border-google-red' : ''} ${className}`}
-              placeholder=" "
-              {...props}
-            />
-            <label>{label}</label>
-          </div>
-          {error && <p className="text-xs text-google-red mt-1">{error}</p>}
-          {helperText && !error && <p className="text-xs text-text-tertiary mt-1">{helperText}</p>}
-        </div>
-      );
-    }
-
+    // Floating label logic removed for Industrial theme consistency - preferring standard labels
+    // Reuse input-field which handles the look
     return (
       <div className="w-full">
-        {label && <label className="block text-sm font-medium text-text-primary mb-2">{label}</label>}
+        {label && <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">{label}</label>}
         <input
           ref={ref}
-          className={`input-google ${error ? 'border-google-red' : ''} ${className}`}
+          className={`input-field ${error ? 'border-red-500 focus:border-red-500' : ''} ${className}`}
           {...props}
         />
-        {error && <p className="text-xs text-google-red mt-1">{error}</p>}
+        {error && <p className="text-xs text-red-500 mt-1 font-medium">{error}</p>}
         {helperText && !error && <p className="text-xs text-text-tertiary mt-1">{helperText}</p>}
       </div>
     );
@@ -55,14 +39,14 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ label, error, helperText, rows = 4, className = '', ...props }, ref) => {
     return (
       <div className="w-full">
-        {label && <label className="block text-sm font-medium text-text-primary mb-2">{label}</label>}
+        {label && <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">{label}</label>}
         <textarea
           ref={ref}
           rows={rows}
-          className={`input-google resize-none ${error ? 'border-google-red' : ''} ${className}`}
+          className={`input-field resize-none ${error ? 'border-red-500' : ''} ${className}`}
           {...props}
         />
-        {error && <p className="text-xs text-google-red mt-1">{error}</p>}
+        {error && <p className="text-xs text-red-500 mt-1 font-medium">{error}</p>}
         {helperText && !error && <p className="text-xs text-text-tertiary mt-1">{helperText}</p>}
       </div>
     );
@@ -82,10 +66,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, error, helperText, options, className = '', ...props }, ref) => {
     return (
       <div className="w-full">
-        {label && <label className="block text-sm font-medium text-text-primary mb-2">{label}</label>}
+        {label && <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">{label}</label>}
         <select
           ref={ref}
-          className={`input-google ${error ? 'border-google-red' : ''} ${className}`}
+          className={`input-field ${error ? 'border-red-500' : ''} ${className}`}
           {...props}
         >
           {options.map((option) => (
@@ -94,7 +78,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        {error && <p className="text-xs text-google-red mt-1">{error}</p>}
+        {error && <p className="text-xs text-red-500 mt-1 font-medium">{error}</p>}
         {helperText && !error && <p className="text-xs text-text-tertiary mt-1">{helperText}</p>}
       </div>
     );

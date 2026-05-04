@@ -26,10 +26,10 @@ export function QuickActionCard({
   return (
     <button
       onClick={onClick}
-      className="card-google p-google-4 w-full text-left hover:shadow-google-lg transition-all group"
+      className="card p-4 w-full text-left hover:shadow-industrial-lg transition-all group"
     >
-      <div className="flex items-center gap-google-4">
-        <div className={`p-3 rounded-google ${colors[color]}`}>
+      <div className="flex items-center gap-4">
+        <div className={`p-3 rounded ${colors[color]}`}>
           <Icon size={20} />
         </div>
         <div className="flex-1">

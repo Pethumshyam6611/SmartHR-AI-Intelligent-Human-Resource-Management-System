@@ -12,6 +12,7 @@ datasource db {
 enum Role {
   ADMIN
   HR_MANAGER
+  DEPARTMENT_HEAD
   EMPLOYEE
 }
 
@@ -28,6 +29,12 @@ enum LeaveType {
   UNPAID
 }
 
+enum LeaveApprovalStage {
+  DEPARTMENT_HEAD_REVIEW
+  HR_REVIEW
+  COMPLETED
+}
+
 enum JobStatus {
   OPEN
   CLOSED
@@ -41,13 +48,23 @@ enum ApplicationStatus {
   ACCEPTED
 }
 
+enum UserStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+}
+
 model User {
-  id            String      @id @default(uuid())
-  email         String      @unique
-  password      String
-  role          Role        @default(EMPLOYEE)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id              String      @id @default(uuid())
+  email           String      @unique
+  password        String
+  role            Role        @default(EMPLOYEE)
+  status          UserStatus  @default(ACTIVE)
+  invitationToken String?     @unique
+  resetToken      String?
+  resetTokenExpiresAt DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 
   employee      Employee?
 
@@ -59,9 +76,11 @@ model Employee {
   userId            String      @unique
   firstName         String
   lastName          String
+  nic               String?     @unique
+  profilePicture    String?     @db.Text
   phoneNumber       String?
   dateOfBirth       DateTime?
-  address           String?      @db.Text
+  address           String?     @db.Text
   department        String?
   position          String?
   joiningDate       DateTime    @default(now())
@@ -102,10 +121,17 @@ model Leave {
   endDate           DateTime      @db.Date
   reason            String        @db.Text
   status            LeaveStatus   @default(PENDING)
+  currentStage      LeaveApprovalStage @default(DEPARTMENT_HEAD_REVIEW)
   appliedAt         DateTime      @default(now())
   reviewedAt        DateTime?
   reviewedBy        String?
   reviewComments    String?       @db.Text
+  departmentHeadReviewedAt DateTime?
+  departmentHeadReviewedBy String?
+  departmentHeadComments   String? @db.Text
+  hrReviewedAt      DateTime?
+  hrReviewedBy      String?
+  hrReviewComments  String?       @db.Text
 
   employee          Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 

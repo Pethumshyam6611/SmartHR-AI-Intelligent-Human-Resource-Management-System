@@ -1,50 +1,77 @@
 # Dependencies
 node_modules/
+backend/node_modules/
+frontend/node_modules/
+mobile/node_modules/
 .pnp
 .pnp.js
 
-# Testing
-coverage/
-
-# Production
-build/
+# Build output
 dist/
+build/
+backend/dist/
+frontend/dist/
+mobile/dist/
+.cache/
+.vite/
 
-# Environment variables
+# Coverage / test output
+coverage/
+.nyc_output/
+
+# Environment files
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
+mobile/.env
+mobile/.env.*
+!frontend/.env.example
+!backend/.env.example
 
 # Logs
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-logs/
-*.log
+pnpm-debug.log*
 
-# IDE
+# Runtime / temp files
+tmp/
+temp/
+*.tmp
+*.temp
+*.tsbuildinfo
+
+# Uploads and generated documents
+uploads/
+backend/uploads/
+*.pdf
+
+# Prisma
+backend/prisma/migrations/
+
+# Mobile / Expo / React Native
+.expo/
+.expo-shared/
+*.expo.*
+android/
+ios/
+
+# IDE / editor
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# OS files
 .DS_Store
 Thumbs.db
-
-# Prisma
-backend/prisma/migrations/
-
-# Build files
-*.tsbuildinfo
-
-# Temporary files
-temp/
-tmp/
-
-# PDF files (salary slips, reports)
-uploads/
-*.pdf
+desktop.ini

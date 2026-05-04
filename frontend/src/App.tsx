@@ -8,6 +8,8 @@ import AuthLayout from './layouts/AuthLayout';
 
 // Pages
 import Login from './pages/auth/Login';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Attendance from './pages/Attendance';
 import Leaves from './pages/Leaves';
@@ -16,6 +18,9 @@ import Jobs from './pages/Jobs';
 import Applications from './pages/Applications';
 import Employees from './pages/Employees';
 import Profile from './pages/Profile';
+
+import Register from './pages/auth/Register';
+import ParticleSystem from './pages/ParticleSystem';
 
 function App() {
   const { isAuthenticated } = useAuthStore();
@@ -27,6 +32,10 @@ function App() {
         {/* Auth Routes */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} />
+          <Route path="/forgot-password" element={!isAuthenticated ? <ForgotPassword /> : <Navigate to="/dashboard" />} />
+          <Route path="/reset-password" element={!isAuthenticated ? <ResetPassword /> : <Navigate to="/dashboard" />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/particles" element={<ParticleSystem />} />
         </Route>
 
         {/* Protected Routes */}

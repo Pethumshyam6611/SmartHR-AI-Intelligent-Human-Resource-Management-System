@@ -20,9 +20,9 @@ export function Button({
   ...props
 }: ButtonProps) {
   const sizeClasses = {
-    sm: 'px-google-4 py-2 text-xs',
-    md: 'px-google-6 py-3 text-sm',
-    lg: 'px-google-8 py-4 text-base',
+    sm: 'px-4 py-2 text-xs',
+    md: 'px-6 py-2.5 text-sm',
+    lg: 'px-8 py-3 text-base',
   };
 
   const variantClasses = {

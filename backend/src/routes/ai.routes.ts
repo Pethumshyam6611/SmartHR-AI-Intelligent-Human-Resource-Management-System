@@ -1,10 +1,25 @@
 import { Router } from 'express';
 import { authenticate, authorize } from '../middleware/auth.middleware';
-// Controllers will be implemented later
+import * as aiController from '../controllers/ai.controller';
 
 const router = Router();
 
 router.use(authenticate);
+
+// POST /api/ai/recommend-leave - Get AI leave recommendation
+router.post('/recommend-leave', aiController.recommendLeave);
+
+// POST /api/ai/analyze-resume - Analyze resume with AI (Admin/HR)
+router.post('/analyze-resume', authorize('ADMIN', 'HR_MANAGER'), aiController.analyzeResume);
+
+// POST /api/ai/salary-analysis - Get AI salary analysis (Admin/HR)
+router.post('/salary-analysis', authorize('ADMIN', 'HR_MANAGER'), aiController.analyzeSalary);
+
+// POST /api/ai/hr-assistant - AI HR chatbot (Admin/HR)
+router.post('/hr-assistant', authorize('ADMIN', 'HR_MANAGER'), aiController.hrAssistant);
+
+// POST /api/ai/attendance-insights - Get AI attendance insights (Admin/HR)
+router.post('/attendance-insights', authorize('ADMIN', 'HR_MANAGER'), aiController.attendanceInsights);
 
 // POST /api/ai/recommend-leave - AI-powered leave recommendation
 // router.post('/recommend-leave', aiController.recommendLeave);

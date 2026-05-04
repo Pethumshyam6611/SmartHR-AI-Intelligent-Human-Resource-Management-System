@@ -8,6 +8,7 @@ export { Badge } from './Badge';
 export { Progress, CircularProgress } from './Progress';
 export { Table } from './Table';
 export { Modal } from './Modal';
+export { AIAssistant } from './AIAssistant';
 export { Tabs } from './Tabs';
 export { Avatar } from './Avatar';
 export { Divider } from './Divider';

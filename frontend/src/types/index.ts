@@ -1,6 +1,7 @@
 export enum Role {
   ADMIN = 'ADMIN',
   HR_MANAGER = 'HR_MANAGER',
+  DEPARTMENT_HEAD = 'DEPARTMENT_HEAD',
   EMPLOYEE = 'EMPLOYEE',
 }
 
@@ -15,6 +16,12 @@ export enum LeaveType {
   CASUAL = 'CASUAL',
   VACATION = 'VACATION',
   UNPAID = 'UNPAID',
+}
+
+export enum LeaveApprovalStage {
+  DEPARTMENT_HEAD_REVIEW = 'DEPARTMENT_HEAD_REVIEW',
+  HR_REVIEW = 'HR_REVIEW',
+  COMPLETED = 'COMPLETED',
 }
 
 export enum JobStatus {
@@ -74,10 +81,17 @@ export interface Leave {
   endDate: string;
   reason: string;
   status: LeaveStatus;
+  currentStage: LeaveApprovalStage;
   appliedAt: string;
   reviewedAt?: string;
   reviewedBy?: string;
   reviewComments?: string;
+  departmentHeadReviewedAt?: string;
+  departmentHeadReviewedBy?: string;
+  departmentHeadComments?: string;
+  hrReviewedAt?: string;
+  hrReviewedBy?: string;
+  hrReviewComments?: string;
   employee?: Employee;
 }
 

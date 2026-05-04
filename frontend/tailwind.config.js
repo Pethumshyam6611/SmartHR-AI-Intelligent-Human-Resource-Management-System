@@ -8,83 +8,67 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Roboto', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Oswald', 'Inter', 'system-ui', 'sans-serif'], // Industrial headers
       },
       colors: {
-        // Google Material Design Color System
-        google: {
-          blue: '#1A73E8',
-          'blue-dark': '#185ABC',
-          green: '#34A853',
-          yellow: '#FBBC04',
-          red: '#EA4335',
-        },
         primary: {
-          50: '#E8F0FE',
-          100: '#D2E3FC',
-          200: '#AECBFA',
-          300: '#8AB4F8',
-          400: '#669DF6',
-          500: '#1A73E8', // Google Blue
-          600: '#185ABC',
-          700: '#1967D2',
-          800: '#1558B0',
-          900: '#0D47A1',
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#7c3aed', // Purple
+          700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95',
+          DEFAULT: '#7c3aed',
         },
-        accent: {
-          50: '#E6F4EA',
-          100: '#CEEAD6',
-          200: '#A8DAB5',
-          300: '#81C995',
-          400: '#5BB974',
-          500: '#34A853', // Google Green
-          600: '#1E8E3E',
-          700: '#137333',
-          800: '#0D652D',
-          900: '#0A5228',
+        secondary: {
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c',
+          500: '#f97316', // Orange
+          600: '#ea580c',
+          700: '#c2410c',
+          800: '#9a3412',
+          900: '#7c2d12',
+          DEFAULT: '#f97316',
         },
         surface: {
-          light: '#FFFFFF',
-          DEFAULT: '#F9FAFB',
-          dark: '#F1F3F4',
-          'dark-1': '#202124',
-          'dark-2': '#292A2D',
-          'dark-3': '#35363A',
+          light: '#f8fafc', // Slate 50
+          DEFAULT: '#1e293b', // Slate 800 (Dark Blueish)
+          dark: '#0f172a', // Slate 900
+          'dark-1': '#1e293b',
+          'dark-2': '#334155',
+          'dark-3': '#475569',
         },
         text: {
-          primary: '#202124',
-          secondary: '#5F6368',
-          tertiary: '#80868B',
-          inverse: '#FFFFFF',
+          primary: '#e2e8f0', // Slate 200 (Light for dark bg)
+          secondary: '#94a3b8', // Slate 400
+          tertiary: '#64748b', // Slate 500
+          inverse: '#0f172a', // Dark for light bg areas
         },
         border: {
-          light: '#DADCE0',
-          DEFAULT: '#E8EAED',
-          dark: '#3C4043',
+          light: '#334155',
+          DEFAULT: '#1e293b',
+          dark: '#0f172a',
         },
       },
       boxShadow: {
-        'google-sm': '0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15)',
-        'google': '0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15)',
-        'google-lg': '0 2px 6px 2px rgba(60, 64, 67, 0.15), 0 8px 24px 4px rgba(60, 64, 67, 0.15)',
-        'google-xl': '0 8px 12px 6px rgba(60, 64, 67, 0.15), 0 4px 16px 0px rgba(60, 64, 67, 0.3)',
+        'industrial': '4px 4px 0px 0px rgba(0,0,0,0.3)',
+        'industrial-sm': '2px 2px 0px 0px rgba(0,0,0,0.3)',
+        'industrial-lg': '8px 8px 0px 0px rgba(0,0,0,0.3)',
+        'neon': '0 0 5px theme("colors.primary.500"), 0 0 20px theme("colors.primary.500")',
       },
       borderRadius: {
-        'google': '8px',
-        'google-lg': '12px',
-        'google-xl': '16px',
-        'google-2xl': '24px',
-      },
-      spacing: {
-        'google-1': '4px',
-        'google-2': '8px',
-        'google-3': '12px',
-        'google-4': '16px',
-        'google-5': '20px',
-        'google-6': '24px',
-        'google-8': '32px',
-        'google-10': '40px',
-        'google-12': '48px',
+        'lg': '4px',
+        'xl': '6px',
+        '2xl': '8px',
+        DEFAULT: '2px', // Sharp corners
       },
     },
   },

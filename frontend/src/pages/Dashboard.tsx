@@ -1,8 +1,9 @@
+import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { QuickActionCard } from '@/components/dashboard/QuickActionCard';
-import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { Card, CardHeader } from '@/components/ui';
+import api from '@/services/api';
 import {
   Users,
   UserCheck,
@@ -10,21 +11,123 @@ import {
   Briefcase,
   Clock,
   DollarSign,
-  TrendingUp,
   FileText,
+  AlertCircle,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+interface DashboardStats {
+  totalEmployees: number;
+  presentToday: number;
+  pendingLeaves: number;
+  openJobs: number;
+}
+
+interface RecentLeave {
+  id: string;
+  leaveType: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  employee?: {
+    firstName: string;
+    lastName: string;
+    department: string;
+  };
+}
 
 export default function Dashboard() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const [stats, setStats] = useState<DashboardStats>({
+    totalEmployees: 0,
+    presentToday: 0,
+    pendingLeaves: 0,
+    openJobs: 0,
+  });
+  const [recentLeaves, setRecentLeaves] = useState<RecentLeave[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with actual API calls
-  const stats = {
-    totalEmployees: 245,
-    presentToday: 198,
-    pendingLeaves: 12,
-    openJobs: 8,
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'HR_MANAGER';
+  const isManager = isAdmin || user?.role === 'DEPARTMENT_HEAD';
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch data in parallel
+      const promises: Promise<any>[] = [api.get('/jobs')];
+
+      if (isManager) {
+        promises.push(api.get('/employees'));
+        promises.push(api.get('/leaves'));
+        promises.push(api.get('/attendance/summary/today'));
+      } else {
+        promises.push(api.get('/leaves/my-leaves'));
+      }
+
+      const results = await Promise.allSettled(promises);
+
+      // Jobs
+      const jobsResult = results[0];
+      const jobsData = jobsResult.status === 'fulfilled' ? jobsResult.value.data : [];
+      const openJobs = Array.isArray(jobsData) ? jobsData.filter((j: any) => j.status === 'OPEN').length : 0;
+
+      if (isManager) {
+        // Employees
+        const empResult = results[1];
+        const employeesData = empResult.status === 'fulfilled' ? empResult.value.data : [];
+        const totalEmployees = Array.isArray(employeesData) ? employeesData.length : 0;
+
+        // Leaves
+        const leavesResult = results[2];
+        const leavesData = leavesResult.status === 'fulfilled' ? leavesResult.value.data : [];
+        const pendingLeaves = Array.isArray(leavesData)
+          ? leavesData.filter((l: any) => l.status === 'PENDING').length
+          : 0;
+
+        const attendanceSummaryResult = results[3];
+        const attendanceSummary = attendanceSummaryResult.status === 'fulfilled' ? attendanceSummaryResult.value.data : null;
+        const presentToday = attendanceSummary?.presentToday ?? 0;
+
+        setStats({
+          totalEmployees: attendanceSummary?.totalEmployees ?? totalEmployees,
+          presentToday,
+          pendingLeaves,
+          openJobs,
+        });
+
+        if (Array.isArray(leavesData)) {
+          setRecentLeaves(leavesData.slice(0, 5));
+        }
+      } else {
+        // Employee view
+        const leavesResult = results[1];
+        const leavesData = leavesResult.status === 'fulfilled' ? leavesResult.value.data : [];
+        const pendingLeaves = Array.isArray(leavesData)
+          ? leavesData.filter((l: any) => l.status === 'PENDING').length
+          : 0;
+
+        setStats({
+          totalEmployees: 0,
+          presentToday: 0,
+          pendingLeaves,
+          openJobs,
+        });
+
+        if (Array.isArray(leavesData)) {
+          setRecentLeaves(leavesData.slice(0, 5));
+        }
+      }
+    } catch (error) {
+      console.error('Dashboard fetch error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const quickActions = [
@@ -58,37 +161,40 @@ export default function Dashboard() {
     },
   ];
 
-  const recentActivities = [
-    {
-      id: '1',
-      user: 'Sarah Johnson',
-      action: 'approved leave request',
-      time: '2 hours ago',
-    },
-    {
-      id: '2',
-      user: 'John Doe',
-      action: 'clocked in',
-      time: '3 hours ago',
-    },
-    {
-      id: '3',
-      user: 'Admin User',
-      action: 'posted a new job opening',
-      time: '5 hours ago',
-    },
-    {
-      id: '4',
-      user: 'HR Manager',
-      action: 'generated monthly payroll',
-      time: '1 day ago',
-    },
-  ];
+  const getLeaveTypeLabel = (type: string) => {
+    const labels: Record<string, string> = {
+      SICK: 'Sick Leave',
+      CASUAL: 'Casual Leave',
+      VACATION: 'Vacation',
+      UNPAID: 'Unpaid Leave',
+    };
+    return labels[type] || type;
+  };
 
-  const isAdmin = user?.role === 'ADMIN' || user?.role === 'HR_MANAGER';
+  const getStatusChip = (status: string) => {
+    switch (status) {
+      case 'APPROVED':
+        return 'chip-success';
+      case 'REJECTED':
+        return 'chip-error';
+      default:
+        return 'chip-warning';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-text-secondary">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-google-6">
+    <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-medium text-text-primary">
@@ -100,140 +206,162 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      {isAdmin && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-google-4">
+      {isManager && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Employees"
             value={stats.totalEmployees}
             icon={Users}
             color="blue"
-            trend={{ value: 5.2, isPositive: true }}
           />
           <StatCard
             title="Present Today"
             value={stats.presentToday}
             icon={UserCheck}
             color="green"
-            trend={{ value: 2.1, isPositive: true }}
           />
           <StatCard
             title="Pending Leaves"
             value={stats.pendingLeaves}
             icon={Calendar}
             color="yellow"
-            trend={{ value: 12.5, isPositive: false }}
           />
           <StatCard
             title="Open Jobs"
             value={stats.openJobs}
             icon={Briefcase}
             color="red"
-            trend={{ value: 33.3, isPositive: true }}
           />
         </div>
       )}
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-xl font-medium text-text-primary mb-google-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-google-4">
+        <h2 className="text-xl font-medium text-text-primary mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {quickActions.map((action, index) => (
             <QuickActionCard key={index} {...action} />
           ))}
         </div>
       </div>
 
-      {/* Charts and Activity Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-google-6">
-        {/* Attendance Overview Chart */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader
-              title="Attendance Overview"
-              subtitle="Weekly attendance statistics"
-              action={
-                <button className="btn-text text-sm">
-                  View Details
-                </button>
-              }
-            />
-            <div className="h-64 flex items-center justify-center text-text-tertiary">
-              <div className="text-center">
-                <TrendingUp size={48} className="mx-auto mb-2 opacity-30" />
-                <p>Chart will be implemented with Recharts</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="lg:col-span-1">
-          <RecentActivity activities={recentActivities} />
-        </div>
-      </div>
-
-      {/* Upcoming Events & Pending Approvals */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-google-6">
-        {/* Upcoming Events */}
+      {/* Recent Leaves and Pending Approvals */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Leave Requests */}
         <Card>
-          <CardHeader title="Upcoming Events" subtitle="This week's schedule" />
-          <div className="space-y-google-3">
-            <div className="flex items-start gap-google-3 p-google-3 rounded-google bg-primary-50">
-              <div className="p-2 bg-primary-500 text-white rounded-google text-center min-w-[48px]">
-                <div className="text-xs font-medium">DEC</div>
-                <div className="text-lg font-bold">18</div>
+          <CardHeader
+            title="Recent Leave Requests"
+            subtitle={isManager ? 'All employee leave requests' : 'Your recent leave requests'}
+            action={
+              <button className="btn-text text-sm" onClick={() => navigate('/leaves')}>
+                View All
+              </button>
+            }
+          />
+          <div className="space-y-3">
+            {recentLeaves.length === 0 ? (
+              <div className="text-center py-8">
+                <Calendar size={32} className="mx-auto text-text-tertiary opacity-30 mb-2" />
+                <p className="text-text-secondary text-sm">No leave requests yet</p>
               </div>
-              <div className="flex-1">
-                <h4 className="font-medium text-text-primary">Team Meeting</h4>
-                <p className="text-sm text-text-secondary">10:00 AM - Conference Room A</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-google-3 p-google-3 rounded-google bg-accent-50">
-              <div className="p-2 bg-accent-500 text-white rounded-google text-center min-w-[48px]">
-                <div className="text-xs font-medium">DEC</div>
-                <div className="text-lg font-bold">20</div>
-              </div>
-              <div className="flex-1">
-                <h4 className="font-medium text-text-primary">Performance Review</h4>
-                <p className="text-sm text-text-secondary">2:00 PM - HR Office</p>
-              </div>
-            </div>
+            ) : (
+              recentLeaves.map((leave) => (
+                <div key={leave.id} className="flex items-center gap-3 p-3 rounded bg-surface-dark-2/50 hover:bg-surface-dark-2 transition-colors">
+                  <FileText size={18} className="text-text-tertiary" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-text-primary text-sm truncate">
+                      {isManager && leave.employee
+                        ? `${leave.employee.firstName} ${leave.employee.lastName}`
+                        : getLeaveTypeLabel(leave.leaveType)}
+                    </p>
+                    <p className="text-xs text-text-tertiary">
+                      {isManager ? getLeaveTypeLabel(leave.leaveType) + ' • ' : ''}
+                      {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <span className={getStatusChip(leave.status)}>{leave.status}</span>
+                </div>
+              ))
+            )}
           </div>
         </Card>
 
         {/* Pending Approvals (Admin/HR only) */}
-        {isAdmin && (
+        {isManager ? (
           <Card>
             <CardHeader
               title="Pending Approvals"
               subtitle="Requires your attention"
               action={
-                <span className="chip-error">
-                  {stats.pendingLeaves}
-                </span>
+                stats.pendingLeaves > 0 ? (
+                  <span className="chip-error">{stats.pendingLeaves}</span>
+                ) : null
               }
             />
-            <div className="space-y-google-3">
-              <button className="list-item w-full">
-                <FileText size={20} className="text-text-tertiary" />
-                <div className="flex-1 text-left">
-                  <p className="font-medium text-text-primary">John Doe - Sick Leave</p>
-                  <p className="text-sm text-text-secondary">Dec 18-20, 2024</p>
+            <div className="space-y-3">
+              {recentLeaves.filter(l => l.status === 'PENDING').length === 0 ? (
+                <div className="text-center py-8">
+                  <AlertCircle size={32} className="mx-auto text-text-tertiary opacity-30 mb-2" />
+                  <p className="text-text-secondary text-sm">No pending approvals</p>
                 </div>
-                <span className="chip-warning">Pending</span>
+              ) : (
+                recentLeaves
+                  .filter(l => l.status === 'PENDING')
+                  .map((leave) => (
+                    <button
+                      key={leave.id}
+                      className="flex items-center gap-3 p-3 rounded bg-surface-dark-2/50 hover:bg-surface-dark-2 transition-colors w-full"
+                      onClick={() => navigate('/leaves')}
+                    >
+                      <FileText size={20} className="text-text-tertiary" />
+                      <div className="flex-1 text-left">
+                        <p className="font-medium text-text-primary text-sm">
+                          {leave.employee?.firstName} {leave.employee?.lastName} — {getLeaveTypeLabel(leave.leaveType)}
+                        </p>
+                        <p className="text-xs text-text-secondary">
+                          {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <span className="chip-warning">Pending</span>
+                    </button>
+                  ))
+              )}
+            </div>
+            {stats.pendingLeaves > 0 && (
+              <button className="btn-text w-full mt-4" onClick={() => navigate('/leaves')}>
+                View All Requests
               </button>
-              <button className="list-item w-full">
-                <FileText size={20} className="text-text-tertiary" />
-                <div className="flex-1 text-left">
-                  <p className="font-medium text-text-primary">Jane Smith - Vacation</p>
-                  <p className="text-sm text-text-secondary">Dec 25-30, 2024</p>
+            )}
+          </Card>
+        ) : (
+          <Card>
+            <CardHeader title="Your Summary" subtitle="Personal HR overview" />
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-3 rounded bg-surface-dark-2/50">
+                <div className="p-2 bg-primary-500/10 rounded">
+                  <Calendar size={20} className="text-primary-400" />
                 </div>
-                <span className="chip-warning">Pending</span>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-text-primary">Pending Leave Requests</p>
+                  <p className="text-xs text-text-secondary">Waiting for approval</p>
+                </div>
+                <span className="text-2xl font-bold text-primary-400">{stats.pendingLeaves}</span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded bg-surface-dark-2/50">
+                <div className="p-2 bg-emerald-500/10 rounded">
+                  <Briefcase size={20} className="text-emerald-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-text-primary">Open Job Positions</p>
+                  <p className="text-xs text-text-secondary">Browse opportunities</p>
+                </div>
+                <span className="text-2xl font-bold text-emerald-400">{stats.openJobs}</span>
+              </div>
+              <button className="btn-primary w-full" onClick={() => navigate('/attendance')}>
+                <Clock size={18} />
+                Go to Attendance
               </button>
             </div>
-            <button className="btn-text w-full mt-google-4">
-              View All Requests
-            </button>
           </Card>
         )}
       </div>

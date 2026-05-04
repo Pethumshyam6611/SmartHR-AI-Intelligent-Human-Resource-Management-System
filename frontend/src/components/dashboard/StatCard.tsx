@@ -37,18 +37,18 @@ export function StatCard({ title, value, icon: Icon, trend, color = 'blue' }: St
   };
 
   return (
-    <Card className="hover:shadow-google-lg transition-shadow">
+    <Card className="hover:shadow-industrial-sm transition-shadow">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-text-secondary text-sm font-medium mb-1">{title}</p>
-          <p className={`text-3xl font-bold ${colors[color].text} mb-2`}>{value}</p>
+          <p className="text-text-secondary text-xs uppercase font-bold tracking-wider mb-2">{title}</p>
+          <p className={`text-3xl font-bold font-display ${colors[color].text} mb-2`}>{value}</p>
           {trend && (
-            <p className={`text-sm ${trend.isPositive ? 'text-accent-600' : 'text-red-600'}`}>
-              {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}% from last month
+            <p className={`text-xs font-mono font-bold ${trend.isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+              {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
             </p>
           )}
         </div>
-        <div className={`p-3 rounded-google-lg ${colors[color].bg}`}>
+        <div className={`p-3 rounded ${colors[color].bg} bg-opacity-10 border border-opacity-20`}>
           <Icon className={colors[color].icon} size={24} />
         </div>
       </div>

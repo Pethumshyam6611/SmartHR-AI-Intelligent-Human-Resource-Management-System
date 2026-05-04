@@ -92,11 +92,14 @@ FRONTEND_URL="http://localhost:5173"
 ### Authentication
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - User login
+- `POST /api/auth/invite` - Invite new employee (Admin/HR)
+- `PUT /api/auth/profile` - Update own profile
 
 ### Employees
 - `GET /api/employees` - Get all employees
 - `GET /api/employees/:id` - Get employee by ID
 - `PUT /api/employees/:id` - Update employee
+- `PATCH /api/employees/:id/toggle-status` - Activate/Deactivate employee
 - `DELETE /api/employees/:id` - Delete employee
 
 ### Attendance

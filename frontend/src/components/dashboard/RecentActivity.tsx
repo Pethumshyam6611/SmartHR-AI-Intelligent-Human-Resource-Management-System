@@ -17,9 +17,9 @@ export function RecentActivity({ activities }: RecentActivityProps) {
   return (
     <Card>
       <CardHeader title="Recent Activity" subtitle="Latest updates from your team" />
-      <div className="space-y-google-3">
+      <div className="space-y-3">
         {activities.map((activity) => (
-          <div key={activity.id} className="flex items-start gap-google-3 p-google-3 hover:bg-surface-dark rounded-google transition-colors">
+          <div key={activity.id} className="flex items-start gap-3 p-3 hover:bg-surface-dark rounded transition-colors">
             <Avatar name={activity.user} src={activity.avatar} size="sm" />
             <div className="flex-1 min-w-0">
               <p className="text-sm text-text-primary">
@@ -33,7 +33,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
           </div>
         ))}
         {activities.length === 0 && (
-          <p className="text-center text-text-secondary py-google-4">No recent activity</p>
+          <p className="text-center text-text-secondary py-4">No recent activity</p>
         )}
       </div>
     </Card>

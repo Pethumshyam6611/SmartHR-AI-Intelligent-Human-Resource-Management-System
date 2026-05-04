@@ -48,11 +48,11 @@ export function Modal({
 
       {/* Modal */}
       <div
-        className={`relative ${sizes[size]} w-full bg-surface-light rounded-google-xl shadow-google-xl max-h-[90vh] overflow-hidden flex flex-col`}
+        className={`relative ${sizes[size]} w-full bg-surface-light rounded-xl shadow-industrial-lg max-h-[90vh] overflow-hidden flex flex-col`}
       >
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between px-google-6 py-google-4 border-b border-border">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             <h2 className="text-xl font-medium text-text-primary">{title}</h2>
             <button onClick={onClose} className="btn-icon">
               <X size={20} />
@@ -61,13 +61,13 @@ export function Modal({
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-google-6 py-google-6">
+        <div className="flex-1 overflow-y-auto px-6 py-6">
           {children}
         </div>
 
         {/* Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-google-3 px-google-6 py-google-4 border-t border-border">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border">
             {footer}
           </div>
         )}
