@@ -1,157 +1,87 @@
-# SmartHR AI - Backend
+# SmartHR AI Backend
 
-Backend API for SmartHR AI built with Node.js, Express, TypeScript, and Prisma.
+Express + TypeScript + Prisma backend for SmartHR AI.
 
-## Tech Stack
+## Stack
 
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **TypeScript** - Type safety
-- **Prisma** - Database ORM
-- **MySQL** - Database
-- **JWT** - Authentication
-- **bcrypt** - Password hashing
-- **Google Gemini API** - AI capabilities
+- Node.js
+- Express
+- TypeScript
+- Prisma + MySQL
+- JWT + bcrypt
+- Nodemailer
+- PDFKit
 
-## Project Structure
-
-```
-backend/
-├── src/
-│   ├── config/           # Database and API configurations
-│   ├── controllers/      # Route controllers
-│   ├── middleware/       # Custom middleware
-│   ├── routes/           # API route definitions
-│   ├── services/         # Business logic
-│   ├── types/            # TypeScript type definitions
-│   ├── utils/            # Utility functions
-│   └── server.ts         # Application entry point
-├── prisma/
-│   ├── schema.prisma     # Database schema
-│   └── seed.ts           # Database seeding
-├── uploads/              # File uploads
-└── package.json
-```
-
-## Available Scripts
+## Setup
 
 ```bash
-# Development
-npm run dev              # Start dev server with hot reload
-
-# Production
-npm run build            # Compile TypeScript
-npm start                # Start production server
-
-# Database
-npm run prisma:generate  # Generate Prisma client
-npm run prisma:migrate   # Run database migrations
-npm run prisma:studio    # Open Prisma Studio GUI
-npm run prisma:seed      # Seed database with sample data
-
-# Code Quality
-npm run lint             # Run ESLint
+cd backend
+npm install
 ```
 
-## Environment Variables
-
-Create a `.env` file in the backend directory:
+Create `backend/.env`:
 
 ```env
-# Database
 DATABASE_URL="mysql://username:password@localhost:3306/smarthr_db"
-
-# JWT
-JWT_SECRET="your-super-secret-jwt-key"
-JWT_EXPIRES_IN="7d"
-
-# Server
+JWT_SECRET="your-secret"
 PORT=5000
-NODE_ENV="development"
-
-# Google Gemini AI
-GEMINI_API_KEY="your-gemini-api-key"
-
-# Office Location (GPS)
+FRONTEND_URL="http://localhost:5173"
+GEMINI_API_KEY="your-key"
 OFFICE_LATITUDE=37.7749
 OFFICE_LONGITUDE=-122.4194
 OFFICE_RADIUS_METERS=100
-
-# Email (Optional)
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT=587
-SMTP_USER="your-email@gmail.com"
-SMTP_PASS="your-app-password"
-
-# Frontend URL
-FRONTEND_URL="http://localhost:5173"
+SMTP_USER=""
+SMTP_PASS=""
 ```
 
-## API Routes
+Run DB + seed:
 
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/invite` - Invite new employee (Admin/HR)
-- `PUT /api/auth/profile` - Update own profile
+```bash
+npm run prisma:generate
+npm run prisma:migrate
+npm run prisma:seed
+```
 
-### Employees
-- `GET /api/employees` - Get all employees
-- `GET /api/employees/:id` - Get employee by ID
-- `PUT /api/employees/:id` - Update employee
-- `PATCH /api/employees/:id/toggle-status` - Activate/Deactivate employee
-- `DELETE /api/employees/:id` - Delete employee
+Start:
 
-### Attendance
-- `POST /api/attendance/clock-in` - Clock in with GPS
-- `POST /api/attendance/clock-out` - Clock out
-- `GET /api/attendance/my-attendance` - Get own attendance
+```bash
+npm run dev
+```
 
-### Leaves
-- `POST /api/leaves` - Apply for leave
-- `GET /api/leaves/my-leaves` - Get own leaves
-- `PUT /api/leaves/:id/approve` - Approve leave
-- `PUT /api/leaves/:id/reject` - Reject leave
+## Key Functional Updates
 
-### Payroll
-- `POST /api/payroll/generate` - Generate payroll
-- `GET /api/payroll/my-payroll` - Get own payroll
-- `GET /api/payroll/:id/download` - Download salary slip
+- Added `DEPARTMENT_HEAD` role.
+- Leave flow is now multi-stage:
+  - `DEPARTMENT_HEAD_REVIEW` -> `HR_REVIEW` -> `COMPLETED`.
+- Added password reset endpoints:
+  - `POST /api/auth/forgot-password`
+  - `POST /api/auth/reset-password`
+- Added attendance summary endpoint:
+  - `GET /api/attendance/summary/today`
+- Added notification creation for leave and payroll events.
 
-### Jobs & Applications
-- `GET /api/jobs` - Get all jobs
-- `POST /api/jobs` - Create job posting
-- `POST /api/applications` - Submit application
+## Main API Groups
 
-### AI Features
-- `POST /api/ai/recommend-leave` - AI leave recommendations
-- `POST /api/ai/analyze-resume` - AI resume analysis
-- `POST /api/ai/hr-assistant` - AI HR assistant
+- `/api/auth`
+- `/api/employees`
+- `/api/attendance`
+- `/api/leaves`
+- `/api/payroll`
+- `/api/jobs`
+- `/api/applications`
+- `/api/notifications`
+- `/api/ai`
 
-## Database Schema
+## Test Accounts
 
-See `prisma/schema.prisma` for complete schema definition.
+- `admin@smarthr.com / admin123`
+- `hr@smarthr.com / hr123`
+- `head.engineering@smarthr.com / head123`
+- `john.doe@smarthr.com / emp123`
 
-Main entities:
-- Users
-- Employees
-- Attendance
-- Leaves
-- Payroll
-- JobPostings
-- Applications
-- Notifications
+## Dev Notes
 
-## Development
-
-1. Install dependencies: `npm install`
-2. Setup database: `npm run prisma:migrate`
-3. Seed data: `npm run prisma:seed`
-4. Start dev server: `npm run dev`
-
-## Testing
-
-Test credentials after seeding:
-- Admin: admin@smarthr.com / admin123
-- HR: hr@smarthr.com / hr123
-- Employee: john.doe@smarthr.com / emp123
+- If SMTP is missing, emails are mocked (logged), and reset/invite links are still returned for local development.
+- Payroll PDFs are stored in `backend/uploads/payroll`.
